@@ -35,7 +35,7 @@ class Quote {
 }
 
 class AppState extends ChangeNotifier {
-  bool _isDarkMode = false
+  bool _isDarkMode = false;
   bool get isDarkMode => _isDarkMode;
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
