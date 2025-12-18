@@ -116,6 +116,8 @@ flutter_export_environment.sh
 .gradle/
 gradle/
 !gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradle/wrapper/gradle-wrapper.jar
 local.properties
 
 # Fastlane
