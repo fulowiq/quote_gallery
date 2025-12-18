@@ -44,13 +44,30 @@ workflows:
         title: Install Flutter SDK
         inputs:
         - version: 3.24.5
-        - is_update: 'false'
+        - is_update: 'true'
     
-    # ========== STEP 4: Restore Dart Cache ==========
+    # ========== STEP 4: Clean Flutter Cache ==========
+    - script@1:
+        title: Clean Flutter cache and verify version
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -e
+            
+            echo "🧹 Cleaning Flutter cache..."
+            flutter clean
+            
+            echo "📋 Flutter and Dart versions:"
+            flutter --version
+            dart --version
+            
+            echo "✅ Cache cleaned and versions verified"
+    
+    # ========== STEP 5: Restore Dart Cache ==========
     - restore-dart-cache@2:
         title: Restore Dart packages cache
     
-    # ========== STEP 5: Flutter Pub Get ==========
+    # ========== STEP 6: Flutter Pub Get ==========
     - script@1:
         title: Flutter packages get
         inputs:
@@ -63,7 +80,7 @@ workflows:
             
             echo "✅ Dependencies installed successfully"
     
-    # ========== STEP 6: Flutter Analyze ==========
+    # ========== STEP 7: Flutter Analyze ==========
     - script@1:
         title: Flutter analyze (code quality check)
         inputs:
@@ -76,11 +93,11 @@ workflows:
             
             echo "✅ Code analysis completed"
     
-    # ========== STEP 7: Save Dart Cache ==========
+    # ========== STEP 8: Save Dart Cache ==========
     - save-dart-cache@1:
         title: Save Dart packages cache
     
-    # ========== STEP 8: Build Android APK ==========
+    # ========== STEP 9: Build Android APK ==========
     - script@1:
         title: Build Android APK (Release)
         inputs:
@@ -116,7 +133,7 @@ workflows:
                 exit 1
             fi
     
-    # ========== STEP 9: Verify Firebase Configuration ==========
+    # ========== STEP 10: Verify Firebase Configuration ==========
     - script@1:
         title: Verify Firebase configuration
         inputs:
@@ -160,7 +177,7 @@ workflows:
             
             echo "✅ Firebase configuration verified successfully"
     
-    # ========== STEP 10: Firebase App Distribution ==========
+    # ========== STEP 11: Firebase App Distribution ==========
     - script@1:
         title: Deploy to Firebase App Distribution
         inputs:
@@ -215,7 +232,7 @@ workflows:
                 exit 1
             fi
     
-    # ========== STEP 11: Create Installation Instructions ==========
+    # ========== STEP 12: Create Installation Instructions ==========
     - script@1:
         title: Create installation instructions
         inputs:
@@ -270,7 +287,7 @@ workflows:
             
             echo "✅ Installation instructions created"
     
-    # ========== STEP 12: Deploy Artifacts ==========
+    # ========== STEP 13: Deploy Artifacts ==========
     - deploy-to-bitrise-io@2:
         title: Deploy build artifacts
         inputs:
