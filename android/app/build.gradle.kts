@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.example.quote_gallery"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -28,8 +28,8 @@ android {
         applicationId = "com.example.quote_gallery"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion  // Required by Firebase Cloud Firestore
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23  // Required by Firebase Cloud Firestore
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
