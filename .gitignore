@@ -1,0 +1,125 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Firebase
+.firebase/
+**/google-services.json
+**/GoogleService-Info.plist
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+firestore.rules.backup
+
+# CI/CD specific
+# GitHub Actions
+.github/workflows/*.log
+
+# Secrets and environment variables
+.env
+.env.*
+*.key
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+key.properties
+service-account.json
+firebase-adminsdk*.json
+
+# Test results and reports
+test-results/
+test-reports/
+junit.xml
+*.lcov
+coverage.xml
+
+# Build artifacts for CI/CD
+*.apk
+*.aab
+*.ipa
+*.dSYM.zip
+*.app
+*.zip
+*.tar.gz
+
+# Platform-specific build folders
+build/
+**/build/
+**/android/app/build/
+**/ios/build/
+**/web/build/
+**/windows/build/
+**/linux/build/
+**/macos/build/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.pb.dart
+*.pbgrpc.dart
+*.pbenum.dart
+*.pbjson.dart
+*.config.dart
+generated_plugin_registrant.dart
+flutter_export_environment.sh
+
+# Gradle
+.gradle/
+gradle/
+!gradle-wrapper.jar
+local.properties
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# CI cache
+.cache/
+node_modules/
+**/.flutter-plugins-dependencies
