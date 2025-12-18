@@ -1,59 +1,26 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-
-// Модель даних
-class Quote {
-  final String id;
-  final String text;
-  final String author;
-  final List<String> tags;
-  final String userId;
-  bool isFavorite;
-
-  Quote({
-    required this.id,
-    required this.text,
-    required this.author,
-    required this.tags,
-    required this.userId,
-    this.isFavorite = false,
-  });
-
-  factory Quote.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Quote(
-      id: doc.id,
-      text: data['text'] ?? '',
-      author: data['author'] ?? 'Невідомий',
-      tags: List<String>.from(data['tags'] ?? []),
-      userId: data['userId'] ?? '',
-      isFavorite: data['isFavorite'] ?? false,
-    );
-  }
-}
+import 'package:cloud_firestore/cloud_firestore.dart';
+// Імпортуємо репозиторій, де тепер живе клас Quote
+import '../repositories/app_repository.dart';
 
 class AppState extends ChangeNotifier {
+  final AppRepository _repository = AppRepository();
   bool _isDarkMode = false;
+  bool _isUploading = false;
+
   bool get isDarkMode => _isDarkMode;
+  bool get isUploading => _isUploading;
 
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+  User? get currentUser => FirebaseAuth.instance.currentUser;
 
-  Stream<List<Quote>> get quotesStream {
-    return _db
-        .collection('quotes')
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .map((snapshot) =>
-        snapshot.docs.map((doc) => Quote.fromFirestore(doc)).toList());
-  }
+  // Стріми даних
+  Stream<List<Quote>> get allQuotesStream => _repository.getGlobalQuotesStream();
 
-  Stream<List<Quote>> get favoriteQuotesStream {
-    return quotesStream.map(
-          (quotes) => quotes.where((q) => q.isFavorite).toList(),
-    );
+  Stream<List<Quote>> get myQuotesStream {
+    if (currentUser == null) return const Stream.empty();
+    return _repository.getUserQuotesStream(currentUser!.uid);
   }
 
   void toggleTheme(bool value) {
@@ -61,44 +28,42 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Додавання цитати в базу
+  // Зміна аватарки
+  Future<void> updateAvatar(File imageFile) async {
+    _isUploading = true;
+    notifyListeners();
+    try {
+      await _repository.uploadUserAvatar(imageFile);
+      await currentUser?.reload();
+    } catch (e) {
+      debugPrint("Storage error: $e");
+    } finally {
+      _isUploading = false;
+      notifyListeners();
+    }
+  }
+
+  // Додавання цитати (одразу публікується)
   Future<void> addQuote(String text, String author, String tagsRaw) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (currentUser == null) return;
 
-    try {
-      await _db.collection('quotes').add({
-        'text': text,
-        'author': author.isEmpty ? 'Невідомий' : author,
-        'tags': tagsRaw.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
-        'userId': user.uid,
-        'isFavorite': false,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+    final quoteData = {
+      'text': text,
+      'author': author.isEmpty ? 'Невідомий' : author,
+      'tags': tagsRaw.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
+      'userId': currentUser!.uid,
+      'isFavorite': false,
+      'timestamp': FieldValue.serverTimestamp(),
+    };
 
-      await _analytics.logEvent(name: 'add_quote', parameters: {
-        'has_author': author.isNotEmpty ? 1 : 0,
-      });
-    } catch (e) {
-      debugPrint("Помилка додавання: $e");
-    }
+    await _repository.addQuote(quoteData);
   }
 
-  Future<void> toggleFavorite(String quoteId, bool currentStatus) async {
-    try {
-      await _db.collection('quotes').doc(quoteId).update({
-        'isFavorite': !currentStatus,
-      });
-    } catch (e) {
-      debugPrint("Помилка оновлення лайка: $e");
-    }
+  Future<void> removeQuote(String id) async {
+    await _repository.deleteQuote(id);
   }
 
-  Future<void> removeQuote(String quoteId) async {
-    try {
-      await _db.collection('quotes').doc(quoteId).delete();
-    } catch (e) {
-      debugPrint("Помилка видалення: $e");
-    }
+  Future<void> toggleFavorite(String id, bool status) async {
+    await _repository.toggleFavorite(id, status);
   }
 }
