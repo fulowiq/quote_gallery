@@ -43,7 +43,7 @@ workflows:
     - flutter-installer@0:
         title: Install Flutter SDK
         inputs:
-        - version: stable
+        - version: 3.24.5
         - is_update: 'false'
     
     # ========== STEP 4: Restore Dart Cache ==========
