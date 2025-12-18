@@ -58,6 +58,11 @@ firestore.rules.backup
 # GitHub Actions
 .github/workflows/*.log
 
+# Bitrise
+.bitrise*
+_tmp/
+bitrise.secrets.yml
+
 # Secrets and environment variables
 .env
 .env.*
