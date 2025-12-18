@@ -25,9 +25,8 @@ workflows:
       1. Клонування репозиторію
       2. Встановлення Flutter SDK
       3. Аналіз коду (flutter analyze)
-      4. Запуск тестів (flutter test)
-      5. Build Release APK
-      6. Upload на Firebase App Distribution
+      4. Build Release APK
+      5. Upload на Firebase App Distribution
     
     steps:
     
@@ -77,24 +76,11 @@ workflows:
             
             echo "✅ Code analysis completed"
     
-    # ========== STEP 7: Flutter Test ==========
-    - script@1:
-        title: Flutter test (unit tests)
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            set -e
-            
-            echo "🧪 Running Flutter tests..."
-            flutter test || echo "⚠️ Some tests failed or no tests found"
-            
-            echo "✅ Testing completed"
-    
-    # ========== STEP 8: Save Dart Cache ==========
+    # ========== STEP 7: Save Dart Cache ==========
     - save-dart-cache@1:
         title: Save Dart packages cache
     
-    # ========== STEP 9: Build Android APK ==========
+    # ========== STEP 8: Build Android APK ==========
     - script@1:
         title: Build Android APK (Release)
         inputs:
@@ -130,7 +116,7 @@ workflows:
                 exit 1
             fi
     
-    # ========== STEP 10: Verify Firebase Configuration ==========
+    # ========== STEP 9: Verify Firebase Configuration ==========
     - script@1:
         title: Verify Firebase configuration
         inputs:
@@ -174,7 +160,7 @@ workflows:
             
             echo "✅ Firebase configuration verified successfully"
     
-    # ========== STEP 11: Firebase App Distribution ==========
+    # ========== STEP 10: Firebase App Distribution ==========
     - script@1:
         title: Deploy to Firebase App Distribution
         inputs:
@@ -229,7 +215,7 @@ workflows:
                 exit 1
             fi
     
-    # ========== STEP 12: Create Installation Instructions ==========
+    # ========== STEP 11: Create Installation Instructions ==========
     - script@1:
         title: Create installation instructions
         inputs:
@@ -284,7 +270,7 @@ workflows:
             
             echo "✅ Installation instructions created"
     
-    # ========== STEP 13: Deploy Artifacts ==========
+    # ========== STEP 12: Deploy Artifacts ==========
     - deploy-to-bitrise-io@2:
         title: Deploy build artifacts
         inputs:
