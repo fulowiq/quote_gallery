@@ -37,7 +37,14 @@ firebase login:ci
 
 Скопіюйте отриманий token.
 
-### 2.3 Додавання Secrets в Bitrise
+### 2.3 Отримання google-services.json вмісту
+
+1. У Firebase Console перейдіть: **Project Settings** → **General**
+2. Прокрутіть до **Your apps** → Android app
+3. Натисніть **Download google-services.json**
+4. Відкрийте файл у текстовому редакторі та скопіюйте **ВЕСЬ** вміст
+
+### 2.4 Додавання Secrets в Bitrise
 
 1. У Bitrise відкрийте **Workflow Editor**
 2. Перейдіть на вкладку **Secrets**
@@ -47,6 +54,12 @@ firebase login:ci
 |-----|-------|-------------|
 | `FIREBASE_APP_ID_ANDROID` | `1:xxxxx:android:xxxxx` | Firebase Android App ID |
 | `FIREBASE_TOKEN` | `1//xxxxxxxxxx` | Firebase CI token |
+| `GOOGLE_SERVICES_JSON` | `{...весь JSON...}` | Вміст файлу google-services.json |
+
+⚠️ **ВАЖЛИВО для `GOOGLE_SERVICES_JSON`:**
+- Вставте **повний** JSON вміст файлу (включно з `{` та `}`)
+- Не змінюйте форматування
+- Приклад початку: `{"project_info":{"project_number":"123456789"...`
 
 4. Натисніть **Save** для кожного secret
 
@@ -84,11 +97,12 @@ Workflow `android_firebase` виконує наступні кроки:
 6. **Flutter Pub Get** - Встановлення залежностей
 7. **Flutter Analyze** - Аналіз якості коду
 8. **Save Dart Cache** - Збереження кешу пакетів
-9. **Build Android APK** - Білд Release APK
-10. **Verify Firebase Configuration** - Перевірка Firebase налаштувань
-11. **Firebase App Distribution** - Публікація в Firebase App Distribution
-12. **Create Installation Instructions** - Створення інструкцій
-13. **Deploy Artifacts** - Публікація артефактів в Bitrise
+9. **Setup Firebase Configuration** - Створення google-services.json з environment variable
+10. **Build Android APK** - Білд Release APK (з NDK 27.0.12077973)
+11. **Verify Firebase Configuration** - Перевірка Firebase налаштувань
+12. **Firebase App Distribution** - Публікація в Firebase App Distribution
+13. **Create Installation Instructions** - Створення інструкцій
+14. **Deploy Artifacts** - Публікація артефактів в Bitrise
 
 ## 📦 Результати Build
 
@@ -106,8 +120,23 @@ Workflow `android_firebase` виконує наступні кроки:
 ### Проблема: "FIREBASE_TOKEN is not set"
 **Рішення:** Згенеруйте новий token через `firebase login:ci` та додайте в Secrets
 
+### Проблема: "GOOGLE_SERVICES_JSON is not set"
+**Рішення:** 
+- Завантажте google-services.json з Firebase Console
+- Скопіюйте повний JSON вміст
+- Додайте як Secret в Bitrise з ключем `GOOGLE_SERVICES_JSON`
+
+### Проблема: "File google-services.json is missing"
+**Рішення:** 
+- Перевірте що GOOGLE_SERVICES_JSON додано в Bitrise Secrets
+- Перевірте що JSON валідний (починається з `{` і закінчується `}`)
+- Перезапустіть build
+
 ### Проблема: "SDK version solving failed"
 **Рішення:** Перевірте що `pubspec.yaml` містить `sdk: ^3.5.0` і закоммічений
+
+### Проблема: "Android NDK version mismatch"
+**Рішення:** Вже виправлено в `build.gradle.kts` (NDK 27.0.12077973)
 
 ### Проблема: Firebase upload fails
 **Рішення:** 

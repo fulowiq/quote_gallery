@@ -97,7 +97,40 @@ workflows:
     - save-dart-cache@1:
         title: Save Dart packages cache
     
-    # ========== STEP 9: Build Android APK ==========
+    # ========== STEP 9: Setup Firebase Configuration ==========
+    - script@1:
+        title: Create google-services.json
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -e
+            
+            echo "🔥 Creating google-services.json from environment variable..."
+            
+            if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+                echo "❌ ERROR: GOOGLE_SERVICES_JSON environment variable is not set!"
+                echo ""
+                echo "📋 To fix this:"
+                echo "   1. Go to Firebase Console > Project Settings"
+                echo "   2. Download google-services.json for your Android app"
+                echo "   3. Copy the entire file content"
+                echo "   4. In Bitrise Workflow Editor > Secrets, add:"
+                echo "      Key: GOOGLE_SERVICES_JSON"
+                echo "      Value: <paste entire JSON content>"
+                exit 1
+            fi
+            
+            echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            
+            if [ -f android/app/google-services.json ]; then
+                echo "✅ google-services.json created successfully"
+                echo "📁 Location: android/app/google-services.json"
+            else
+                echo "❌ Failed to create google-services.json"
+                exit 1
+            fi
+    
+    # ========== STEP 10: Build Android APK ==========
     - script@1:
         title: Build Android APK (Release)
         inputs:
@@ -133,7 +166,7 @@ workflows:
                 exit 1
             fi
     
-    # ========== STEP 10: Verify Firebase Configuration ==========
+    # ========== STEP 11: Verify Firebase Configuration ==========
     - script@1:
         title: Verify Firebase configuration
         inputs:
@@ -177,7 +210,7 @@ workflows:
             
             echo "✅ Firebase configuration verified successfully"
     
-    # ========== STEP 11: Firebase App Distribution ==========
+    # ========== STEP 12: Firebase App Distribution ==========
     - script@1:
         title: Deploy to Firebase App Distribution
         inputs:
@@ -232,7 +265,7 @@ workflows:
                 exit 1
             fi
     
-    # ========== STEP 12: Create Installation Instructions ==========
+    # ========== STEP 13: Create Installation Instructions ==========
     - script@1:
         title: Create installation instructions
         inputs:
@@ -287,7 +320,7 @@ workflows:
             
             echo "✅ Installation instructions created"
     
-    # ========== STEP 13: Deploy Artifacts ==========
+    # ========== STEP 14: Deploy Artifacts ==========
     - deploy-to-bitrise-io@2:
         title: Deploy build artifacts
         inputs:
